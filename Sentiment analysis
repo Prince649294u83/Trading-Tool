@@ -1,0 +1,39 @@
+pip install streamlit
+import streamlit as st
+from textblob import TextBlob
+import pandas as pd
+import yfinance as yf
+
+# Title
+st.title("Stock Market Prediction with Sentiment Analysis")
+
+# Sidebar
+st.sidebar.header("Inputs")
+stock_symbol = st.sidebar.text_input("Enter Stock Symbol (e.g., AAPL)", "AAPL")
+news_text = st.sidebar.text_area("Enter News or Social Media Text", "The stock market is booming!")
+start_date = st.sidebar.date_input("Start Date", pd.to_datetime("2022-01-01"))
+end_date = st.sidebar.date_input("End Date", pd.to_datetime("2023-01-01"))
+
+# Sentiment Analysis
+st.subheader("Sentiment Analysis")
+sentiment = TextBlob(news_text).sentiment.polarity
+if sentiment > 0:
+    st.success("Positive Sentiment")
+elif sentiment < 0:
+    st.error("Negative Sentiment")
+else:
+    st.info("Neutral Sentiment")
+
+st.write(f"Sentiment Score: {sentiment:.2f}")
+
+# Stock Price Prediction (Basic Example)
+st.subheader("Stock Price Prediction")
+try:
+    stock_data = yf.download(stock_symbol, start=start_date, end=end_date)
+    st.line_chart(stock_data["Close"])
+    st.write("Stock price data retrieved successfully.")
+except Exception as e:
+    st.error(f"Error fetching stock data: {e}")
+
+# Footer
+st.markdown("*Disclaimer:* This tool is for educational purposes only and should not be used for financial decisions.")
